@@ -3,6 +3,7 @@ import "./globals.css";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import GoogleProvider from "@/providers/GoogleProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
 
@@ -28,15 +29,14 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AuthProvider>
-          <Navbar />
-
-          <main className="flex-1">{children}</main>
-
-          <Footer></Footer>
-
-          <Toaster position="top-center" />
-        </AuthProvider>
+        <GoogleProvider>
+          <AuthProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <Toaster position="top-center" />
+          </AuthProvider>
+        </GoogleProvider>
       </body>
     </html>
   );
