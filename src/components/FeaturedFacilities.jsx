@@ -1,7 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import FacilityCard from "@/components/FacilityCard";
+import axiosPublic from "@/lib/axiosPublic";
 
 const FeaturedFacilities = () => {
   const [facilities, setFacilities] = useState([]);
@@ -10,11 +10,11 @@ const FeaturedFacilities = () => {
   useEffect(() => {
     const fetchFacilities = async () => {
       try {
-        const res = await fetch("http://localhost:5000/facilities");
-        const data = await res.json();
-        setFacilities(Array.isArray(data) ? data.slice(0, 6) : []);
+       
+        const res = await axiosPublic.get("/facilities");
+        setFacilities(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching facilities:", error);
         setFacilities([]);
       } finally {
         setLoading(false);
@@ -26,18 +26,17 @@ const FeaturedFacilities = () => {
 
   return (
     <section className="w-full bg-[#030608] px-5 py-24 text-white sm:px-8 lg:px-14">
+   
       <div className="text-center">
         <span className="inline-flex rounded-full border border-[#2a3238] bg-[#071014] px-5 py-2 text-sm font-semibold text-[#00d18f]">
           Featured Facilities
         </span>
-
         <h2 className="mt-5 text-3xl font-black sm:text-5xl">
           Discover Top{" "}
           <span className="bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] bg-clip-text text-transparent">
             Sports Venues
           </span>
         </h2>
-
         <p className="mx-auto mt-4 max-w-2xl text-[#a7b0b8]">
           Explore our latest sports facilities from the database.
         </p>
@@ -45,11 +44,8 @@ const FeaturedFacilities = () => {
 
       {loading ? (
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {[1, 2, 3].map((item) => (
-            <div
-              key={item}
-              className="h-[430px] animate-pulse rounded-3xl bg-[#071014]"
-            />
+          {[1, 2, 3, 4, 5, 6].map((item) => (
+            <div key={item} className="h-[430px] animate-pulse rounded-3xl bg-[#071014]" />
           ))}
         </div>
       ) : facilities.length === 0 ? (
@@ -61,8 +57,8 @@ const FeaturedFacilities = () => {
         </div>
       ) : (
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {facilities.map((facility) => (
-            <FacilityCard key={facility._id} facility={facility} />
+          {facilities.slice(0, 6).map((facility, index) => (
+            <FacilityCard key={`${facility._id || index}`} facility={facility} />
           ))}
         </div>
       )}

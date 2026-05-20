@@ -1,8 +1,13 @@
 "use client";
 
+import { API_URL } from "@/config"; 
+
+
 import { useEffect, useMemo, useState } from "react";
 import FacilityCard from "@/components/FacilityCard";
 import { FaSearch } from "react-icons/fa";
+
+const res = await fetch(`${API_URL}/facilities`);
 
 const sportTypes = [
   "All",
@@ -25,7 +30,7 @@ export default function FacilitiesPage() {
   useEffect(() => {
     const fetchFacilities = async () => {
       try {
-        const res = await fetch("http://localhost:5000/facilities");
+        const res = await fetch("https://sport-nest-server-pi.vercel.app/facilities");
 
         if (!res.ok) {
           throw new Error("Failed to fetch facilities");
@@ -50,7 +55,7 @@ export default function FacilitiesPage() {
       const type = facility?.facility_type || "";
 
       const matchSearch = name.includes(searchText.toLowerCase());
-      const matchType = selectedType === "All" || type === selectedType;
+      const matchType = selectedType === "All" || type.toLowerCase() === selectedType.toLowerCase();
 
       return matchSearch && matchType;
     });
@@ -124,8 +129,8 @@ export default function FacilitiesPage() {
         </div>
       ) : (
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredFacilities.map((facility) => (
-            <FacilityCard key={facility._id} facility={facility} />
+          {filteredFacilities.map((facility, index) => (
+            <FacilityCard key={`${facility._id}-${index}`} facility={facility} />
           ))}
         </div>
       )}

@@ -95,8 +95,8 @@ export default function MyBookingsPage() {
   };
 
   return (
-    <section className="min-h-screen bg-[#030608] px-5 py-16 text-white sm:px-8 lg:px-14">
-      <div className="text-center">
+    <section className="min-h-screen w-full overflow-x-hidden bg-[#030608] px-4 py-16 text-white sm:px-8 lg:px-14">
+      <div className="text-center max-w-7xl mx-auto w-full">
         <span className="inline-flex rounded-full border border-[#2a3238] bg-[#071014] px-5 py-2 text-sm font-semibold text-[#00d18f]">
           My Bookings
         </span>
