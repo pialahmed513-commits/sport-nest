@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import axiosPublic from "@/lib/axiosPublic";
 import { useAuth } from "@/providers/AuthProvider";
+import { authClient } from "@/lib/auth-client";
 
 export default function AddFacilityPage() {
   const router = useRouter();
@@ -44,9 +44,12 @@ export default function AddFacilityPage() {
     try {
       setLoading(true);
 
-      const res = await axiosPublic.post("/facilities", facilityData);
+      const result = await authClient("/facilities", {
+        method: "POST",
+        body: JSON.stringify(facilityData),
+      });
 
-      if (res.data?.insertedId) {
+      if (result?.insertedId) {
         toast.success("Facility added successfully");
         form.reset();
         router.push("/facilities");
@@ -55,7 +58,7 @@ export default function AddFacilityPage() {
       }
     } catch (error) {
       console.log("Add facility error:", error);
-      toast.error(error?.response?.data?.message || "Server connection failed");
+      toast.error(error?.message || "Server connection failed");
     } finally {
       setLoading(false);
     }

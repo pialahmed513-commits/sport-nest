@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import FacilityCard from "@/components/FacilityCard";
-import axiosPublic from "@/lib/axiosPublic";
+import { authClient } from "@/lib/auth-client";
 import { FaSearch } from "react-icons/fa";
 
 const sportTypes = [
@@ -26,8 +26,8 @@ export default function FacilitiesPage() {
   useEffect(() => {
     const fetchFacilities = async () => {
       try {
-        const res = await axiosPublic.get("/facilities");
-        setFacilities(Array.isArray(res.data) ? res.data : []);
+        const data = await authClient("/facilities");
+        setFacilities(Array.isArray(data) ? data : []);
       } catch (error) {
         console.log("Error fetching facilities:", error);
         setFacilities([]);
@@ -43,10 +43,10 @@ export default function FacilitiesPage() {
     return facilities.filter((facility) => {
       const name = facility?.name?.toLowerCase() || "";
       const type = facility?.facility_type?.toLowerCase() || "";
+      const selected = selectedType.toLowerCase();
 
       const matchSearch = name.includes(searchText.toLowerCase());
-      const matchType =
-        selectedType === "All" || type === selectedType.toLowerCase();
+      const matchType = selectedType === "All" || type === selected;
 
       return matchSearch && matchType;
     });
@@ -121,8 +121,11 @@ export default function FacilitiesPage() {
         </div>
       ) : (
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredFacilities.map((facility) => (
-            <FacilityCard key={facility._id} facility={facility} />
+          {filteredFacilities.map((facility, index) => (
+            <FacilityCard
+              key={facility?._id || index}
+              facility={facility}
+            />
           ))}
         </div>
       )}

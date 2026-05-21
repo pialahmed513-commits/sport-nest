@@ -1,2 +1,17 @@
 @import "tailwindcss";
 @import "@heroui/styles"; 
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+}

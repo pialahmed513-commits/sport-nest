@@ -47,7 +47,7 @@ export default function RegisterPage() {
       router.push("/");
       router.refresh();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Registration failed");
+      toast.error(error?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export default function RegisterPage() {
       router.push("/");
       router.refresh();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Google login failed");
+      toast.error(error?.message || "Google login failed");
     }
   };
 
@@ -76,28 +76,33 @@ export default function RegisterPage() {
     <section className="min-h-screen bg-[#030608] px-5 py-16 text-white sm:px-8 lg:px-14">
       <div className="mx-auto max-w-xl rounded-3xl border border-[#1a2229] bg-[#071014] p-6 shadow-2xl sm:p-10">
         <div className="text-center">
-          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] text-3xl font-black text-[#020609]">
-            S
-          </span>
-
-          <h1 className="mt-6 text-3xl font-black sm:text-4xl">
-            Create{" "}
-            <span className="bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] bg-clip-text text-transparent">
-              Account
+          <div className="mx-auto flex items-center justify-center gap-3">
+            <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] text-3xl font-black text-[#020609]">
+              S
             </span>
+
+            <h2 className="text-2xl font-black text-white">
+              Sport<span className="text-[#00d18f]">Nest</span>
+            </h2>
+          </div>
+
+          <h1 className="mt-8 text-3xl font-black sm:text-4xl">
+            Create Account
           </h1>
 
           <p className="mt-3 text-[#a7b0b8]">
-            Join SportNest to book and manage sports facilities.
+            Join SportNest and start booking facilities.
           </p>
         </div>
 
         <form onSubmit={handleRegister} className="mt-10 space-y-6">
           <div>
-            <label className="mb-2 block font-bold">Full Name</label>
+            <label className="mb-2 block font-bold">
+              Full Name <span className="text-red-400">*</span>
+            </label>
 
             <div className="flex items-center gap-3 rounded-2xl border border-[#1a2229] bg-[#101820] px-4 py-4">
-              <FaUser className="text-[#00d18f]" />
+              <FaUser className="text-[#a7b0b8]" />
 
               <input
                 type="text"
@@ -110,10 +115,12 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="mb-2 block font-bold">Email Address</label>
+            <label className="mb-2 block font-bold">
+              Email Address <span className="text-red-400">*</span>
+            </label>
 
             <div className="flex items-center gap-3 rounded-2xl border border-[#1a2229] bg-[#101820] px-4 py-4">
-              <FaEnvelope className="text-[#00d18f]" />
+              <FaEnvelope className="text-[#a7b0b8]" />
 
               <input
                 type="email"
@@ -126,10 +133,15 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="mb-2 block font-bold">Photo URL</label>
+            <label className="mb-2 block font-bold">
+              Photo URL{" "}
+              <span className="text-sm font-normal text-[#a7b0b8]">
+                Optional
+              </span>
+            </label>
 
             <div className="flex items-center gap-3 rounded-2xl border border-[#1a2229] bg-[#101820] px-4 py-4">
-              <FaImage className="text-[#00d18f]" />
+              <FaImage className="text-[#a7b0b8]" />
 
               <input
                 type="url"
@@ -141,15 +153,17 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="mb-2 block font-bold">Password</label>
+            <label className="mb-2 block font-bold">
+              Password <span className="text-red-400">*</span>
+            </label>
 
             <div className="flex items-center gap-3 rounded-2xl border border-[#1a2229] bg-[#101820] px-4 py-4">
-              <FaLock className="text-[#00d18f]" />
+              <FaLock className="text-[#a7b0b8]" />
 
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                placeholder="Minimum 6 characters"
+                placeholder="Create a password"
                 className="w-full bg-transparent outline-none placeholder:text-[#7f8a93]"
                 required
               />
@@ -162,12 +176,16 @@ export default function RegisterPage() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+
+            <p className="mt-2 text-sm text-[#a7b0b8]">
+              Minimum 6 characters.
+            </p>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-2xl bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] px-6 py-4 font-extrabold text-[#020609] transition hover:scale-[1.02] disabled:opacity-60"
+            className="w-full rounded-2xl bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] px-6 py-4 font-extrabold text-[#020609] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>
@@ -179,7 +197,7 @@ export default function RegisterPage() {
           <div className="h-px flex-1 bg-[#1a2229]" />
         </div>
 
-        <div className="flex justify-center rounded-2xl border border-[#1a2229] bg-[#101820] p-5">
+        <div className="flex justify-center rounded-2xl border border-[#2a3238] bg-[#101820] p-5">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => toast.error("Google login failed")}
