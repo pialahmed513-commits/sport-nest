@@ -1,16 +1,30 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import axiosPublic from "@/lib/axiosPublic";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function AddFacilityPage() {
   const router = useRouter();
+  const { user } = useAuth();
+
+  const [loading, setLoading] = useState(false);
 
   const handleAddFacility = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+
+    const ownerEmail = user?.email || data.owner_email;
+
+    if (!ownerEmail) {
+      toast.error("Owner email is required");
+      return;
+    }
 
     const facilityData = {
       name: data.name,
@@ -24,30 +38,26 @@ export default function AddFacilityPage() {
         .map((slot) => slot.trim())
         .filter(Boolean),
       description: data.description,
-      owner_email: data.owner_email,
+      owner_email: ownerEmail,
     };
 
     try {
-      const res = await fetch("http://localhost:5000/facilities", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(facilityData),
-      });
+      setLoading(true);
 
-      const result = await res.json();
+      const res = await axiosPublic.post("/facilities", facilityData);
 
-      if (result.insertedId) {
+      if (res.data?.insertedId) {
         toast.success("Facility added successfully");
-        e.currentTarget.reset();
+        form.reset();
         router.push("/facilities");
       } else {
         toast.error("Failed to add facility");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Server connection failed");
+      console.log("Add facility error:", error);
+      toast.error(error?.response?.data?.message || "Server connection failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -150,9 +160,7 @@ export default function AddFacilityPage() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="mb-2 block font-bold">
-              Available Time Slots
-            </label>
+            <label className="mb-2 block font-bold">Available Time Slots</label>
             <input
               type="text"
               name="available_slots"
@@ -170,6 +178,7 @@ export default function AddFacilityPage() {
             <input
               type="email"
               name="owner_email"
+              defaultValue={user?.email || ""}
               placeholder="owner@example.com"
               className="w-full rounded-2xl border border-[#1a2229] bg-[#101820] px-4 py-4 outline-none focus:border-[#00d18f]"
               required
@@ -189,9 +198,10 @@ export default function AddFacilityPage() {
 
           <button
             type="submit"
-            className="md:col-span-2 rounded-2xl bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] px-6 py-4 font-extrabold text-[#020609] transition hover:scale-[1.02]"
+            disabled={loading}
+            className="md:col-span-2 rounded-2xl bg-gradient-to-r from-[#00d18f] to-[#0ea5e9] px-6 py-4 font-extrabold text-[#020609] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Add Facility
+            {loading ? "Adding Facility..." : "Add Facility"}
           </button>
         </form>
       </div>

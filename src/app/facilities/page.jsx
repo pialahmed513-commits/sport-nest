@@ -1,13 +1,9 @@
 "use client";
 
-import { API_URL } from "@/config"; 
-
-
 import { useEffect, useMemo, useState } from "react";
 import FacilityCard from "@/components/FacilityCard";
+import axiosPublic from "@/lib/axiosPublic";
 import { FaSearch } from "react-icons/fa";
-
-const res = await fetch(`${API_URL}/facilities`);
 
 const sportTypes = [
   "All",
@@ -30,16 +26,10 @@ export default function FacilitiesPage() {
   useEffect(() => {
     const fetchFacilities = async () => {
       try {
-        const res = await fetch("https://sport-nest-server-pi.vercel.app/facilities");
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch facilities");
-        }
-
-        const data = await res.json();
-        setFacilities(Array.isArray(data) ? data : []);
+        const res = await axiosPublic.get("/facilities");
+        setFacilities(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
-        console.log(error);
+        console.log("Error fetching facilities:", error);
         setFacilities([]);
       } finally {
         setLoading(false);
@@ -52,10 +42,11 @@ export default function FacilitiesPage() {
   const filteredFacilities = useMemo(() => {
     return facilities.filter((facility) => {
       const name = facility?.name?.toLowerCase() || "";
-      const type = facility?.facility_type || "";
+      const type = facility?.facility_type?.toLowerCase() || "";
 
       const matchSearch = name.includes(searchText.toLowerCase());
-      const matchType = selectedType === "All" || type.toLowerCase() === selectedType.toLowerCase();
+      const matchType =
+        selectedType === "All" || type === selectedType.toLowerCase();
 
       return matchSearch && matchType;
     });
@@ -123,14 +114,15 @@ export default function FacilitiesPage() {
       ) : filteredFacilities.length === 0 ? (
         <div className="mt-14 rounded-3xl border border-[#1a2229] bg-[#071014] p-10 text-center">
           <h3 className="text-2xl font-extrabold">No facilities found</h3>
+
           <p className="mt-3 text-[#a7b0b8]">
             Please add facilities or try a different search/filter.
           </p>
         </div>
       ) : (
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredFacilities.map((facility, index) => (
-            <FacilityCard key={`${facility._id}-${index}`} facility={facility} />
+          {filteredFacilities.map((facility) => (
+            <FacilityCard key={facility._id} facility={facility} />
           ))}
         </div>
       )}
